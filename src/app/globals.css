@@ -1,0 +1,580 @@
+@import "tailwindcss";
+
+:root {
+  /*
+   * App surfaces & ink.
+   *
+   * The shop's screens are meant to read as instrument panels: a cool graphite ground with
+   * machined plates sitting on it, rather than paper. Surfaces carry a faint blue-grey cast
+   * (the colour of bead-blasted aluminium) so white plates look like metal, not sheets.
+   */
+  --surface-page: #eef1f5;
+  --surface-card: #ffffff;
+  --surface-chart: #f8fafc;
+  --ink-primary: #0d1117;
+  --ink-secondary: #4a5261;
+  --ink-muted: #8a93a3;
+
+  /*
+   * Brand: ImmerSons AutoMoto red, with the signage yellow as a secondary accent.
+   * `--brand` is a surface (white text sits on it); `--brand-strong` is a foreground.
+   * The red is darkened from the signage hue so white label text clears 4.5:1 on it.
+   */
+  --brand: #c81e1e;
+  --brand-strong: #a41515;
+  --brand-soft: #fef2f2;
+  /* Hover for solid brand buttons. Separate from --brand-strong, which must invert in dark. */
+  --brand-hover: #a41515;
+
+  /*
+   * Signage yellow. Reserved for accents on dark surfaces (sidebar mark, hero rules) — it is
+   * far too light to carry white text, so it is never used as a button surface.
+   * `--accent-ink` is the only readable foreground pairing for it (near-black on yellow).
+   */
+  --accent: #ffd400;
+  --accent-soft: #fffbeb;
+  --accent-ink: #3f2d00;
+
+  /* Solid destructive button surface. --status-critical stays a foreground in both themes. */
+  --critical-bg: #d03b3b;
+  --critical-bg-hover: #b91c1c;
+
+  /* Chart palette (validated categorical slots, light mode) */
+  --series-1: #2a78d6;
+  --series-2: #1baf7a;
+  --series-3: #eda100;
+  --series-4: #008300;
+  --series-5: #4a3aa7;
+  --series-6: #e34948;
+  --chart-grid: #e1e0d9;
+  --chart-axis: #c3c2b7;
+  --delta-up: #006300;
+  --delta-down: #c02121;
+
+  /* Status (reserved, never used as series) */
+  --status-good: #0ca30c;
+  --status-warning: #b97a00;
+  --status-critical: #d03b3b;
+
+  /* Hairlines, fills and shadows derived from ink. Tokenised so dark mode can invert them. */
+  --card-border: rgba(13, 17, 23, 0.1);
+  --card-shadow: rgba(13, 17, 23, 0.05);
+  --scrollbar-thumb: rgba(13, 17, 23, 0.18);
+
+  /*
+   * Machined-plate chrome.
+   *
+   * A real panel reads as metal because of how light meets its edges: a bright top bevel,
+   * a dark bottom one, and a hairline seam between plates. These three tokens do that work
+   * and are the reason cards look milled rather than drawn.
+   */
+  --bevel-light: rgba(255, 255, 255, 0.9);
+  --bevel-dark: rgba(13, 17, 23, 0.1);
+  --seam: rgba(13, 17, 23, 0.09);
+  /* Corner ticks and dimension marks — drafting annotation, not fasteners. */
+  --tick: rgba(13, 17, 23, 0.28);
+
+  /*
+   * Engineering grid. Two scales: a fine grid for the working ground and a coarser major
+   * line every 5th cell, the way a real drafting sheet is ruled.
+   */
+  --grid-line: rgba(13, 17, 23, 0.04);
+  --grid-line-major: rgba(13, 17, 23, 0.06);
+  --grid-size: 22px;
+
+  /* Sidebar: the instrument rail — a darker plate than the page, like a bezel. */
+  --sidebar-bg: #ffffff;
+  --sidebar-border: rgba(13, 17, 23, 0.1);
+  --sidebar-ink: #4a5261;
+  --sidebar-ink-muted: #98a1b0;
+  --sidebar-hover: rgba(13, 17, 23, 0.04);
+  /* Active nav item: a brand wash with an indicator bar, like a lit switch on a console. */
+  --sidebar-active-bg: #fef2f2;
+  --sidebar-active-ink: #a41515;
+
+  /* Indicator-lamp glow, used sparingly on live/active states. */
+  --glow-brand: rgba(200, 30, 30, 0.35);
+  --glow-good: rgba(12, 163, 12, 0.35);
+}
+
+/*
+ * Dark theme. Opt-in only: light stays the default when no `data-theme` is set, so we
+ * deliberately do not honour `prefers-color-scheme`.
+ *
+ * Tailwind v4 compiles `bg-emerald-50` to `var(--color-emerald-50)` and `border-black/10` to
+ * `color-mix(..., var(--color-black) 10%, transparent)`. Redefining those palette variables here
+ * therefore retints the whole app without editing ~400 call sites.
+ *
+ * Flipping --color-black to white is what inverts every `border-black/*` hairline, `bg-black/*`
+ * fill and hover tint at once. --color-white is deliberately NOT flipped: `text-white` sits on
+ * brand buttons and on the sidebar, where it must stay white.
+ *
+ * Two shade families are likewise left alone because they render on surfaces that are dark in
+ * BOTH themes: slate-300/400 (sidebar text) and red-100/200 (login + dashboard brand panels,
+ * which are ImmerSons red in both themes and carry pale-red text).
+ */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --surface-page: #0b0e13;
+  --surface-card: #161b23;
+  --surface-chart: #12161d;
+  --ink-primary: #e6ebf2;
+  --ink-secondary: #a3adbd;
+  --ink-muted: #737d8c;
+
+  /*
+   * --brand stays dark: `bg-brand text-white` (primary buttons, active sidebar nav) needs a
+   * surface white text can sit on, in both themes. Only --brand-strong, which is a foreground
+   * (`text-brand-strong`), lightens to clear contrast on the dark card.
+   */
+  --brand: #c81e1e;
+  --brand-strong: #f87171;
+  --brand-soft: color-mix(in oklab, #ef4444 14%, var(--surface-card));
+  --brand-hover: #a41515;
+
+  --accent: #ffd400;
+  --accent-soft: color-mix(in oklab, #facc15 14%, var(--surface-card));
+  --accent-ink: #fde68a;
+
+  --critical-bg: #b42323;
+  --critical-bg-hover: #8f1b1b;
+
+  --series-1: #5fa8f5;
+  --series-2: #3fd39c;
+  --series-3: #f5be3d;
+  --series-4: #4cc44c;
+  --series-5: #9a8cf0;
+  --series-6: #f57373;
+  --chart-grid: #2a2e37;
+  --chart-axis: #3c414c;
+  --delta-up: #4cc44c;
+  --delta-down: #f06a6a;
+
+  --status-good: #3fd36b;
+  --status-warning: #e0a53a;
+  --status-critical: #f06a6a;
+
+  --card-border: rgba(255, 255, 255, 0.1);
+  --card-shadow: rgba(0, 0, 0, 0.5);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.16);
+
+  /* Dark mode is the instrument-panel mode: light falls from above onto raised metal. */
+  --bevel-light: rgba(255, 255, 255, 0.08);
+  --bevel-dark: rgba(0, 0, 0, 0.5);
+  --seam: rgba(255, 255, 255, 0.08);
+  --tick: rgba(255, 255, 255, 0.32);
+
+  --grid-line: rgba(255, 255, 255, 0.035);
+  --grid-line-major: rgba(255, 255, 255, 0.055);
+
+  --sidebar-bg: #12161d;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ink: #a3adbd;
+  --sidebar-ink-muted: #6b7382;
+  --sidebar-hover: rgba(255, 255, 255, 0.05);
+  --sidebar-active-bg: color-mix(in oklab, #ef4444 16%, var(--surface-card));
+  --sidebar-active-ink: #f87171;
+
+  --glow-brand: rgba(248, 113, 113, 0.35);
+  --glow-good: rgba(63, 211, 107, 0.3);
+
+  /* Inverts every black-alpha hairline, fill and hover tint. */
+  --color-black: #ffffff;
+
+  /*
+   * Literal hexes, not `var(--color-emerald-500)`: Tailwind v4 only emits a theme variable when
+   * some utility actually uses it, and nothing in this app uses the 500/400/300/200 shades. A
+   * reference to an unemitted variable resolves to an invalid value and blanks the declaration.
+   */
+
+  /* Category / badge tints: a dark wash of the hue instead of a pale one. */
+  --color-emerald-50: color-mix(in oklab, #10b981 15%, var(--surface-card));
+  --color-lime-50: color-mix(in oklab, #84cc16 15%, var(--surface-card));
+  --color-red-50: color-mix(in oklab, #ef4444 15%, var(--surface-card));
+  --color-rose-50: color-mix(in oklab, #f43f5e 15%, var(--surface-card));
+  --color-amber-50: color-mix(in oklab, #f59e0b 15%, var(--surface-card));
+  --color-yellow-50: color-mix(in oklab, #eab308 15%, var(--surface-card));
+  --color-orange-50: color-mix(in oklab, #f97316 15%, var(--surface-card));
+  --color-sky-50: color-mix(in oklab, #0ea5e9 15%, var(--surface-card));
+  --color-teal-50: color-mix(in oklab, #14b8a6 15%, var(--surface-card));
+  --color-cyan-50: color-mix(in oklab, #06b6d4 15%, var(--surface-card));
+  --color-indigo-50: color-mix(in oklab, #6366f1 15%, var(--surface-card));
+  --color-violet-50: color-mix(in oklab, #8b5cf6 15%, var(--surface-card));
+  --color-slate-50: color-mix(in oklab, #64748b 15%, var(--surface-card));
+  --color-stone-50: color-mix(in oklab, #78716c 15%, var(--surface-card));
+  --color-gray-100: color-mix(in oklab, #6b7280 15%, var(--surface-card));
+  --color-zinc-100: color-mix(in oklab, #71717a 15%, var(--surface-card));
+
+  /* Tint foregrounds (the `-400` shade), so they read on the dark wash above. */
+  --color-emerald-600: #34d399;
+  --color-lime-600: #a3e635;
+  --color-red-600: #f87171;
+  --color-rose-600: #fb7185;
+  --color-amber-600: #fbbf24;
+  --color-yellow-600: #facc15;
+  --color-orange-600: #fb923c;
+  --color-sky-600: #38bdf8;
+  --color-teal-600: #2dd4bf;
+  --color-cyan-600: #22d3ee;
+  --color-indigo-600: #818cf8;
+  --color-violet-600: #a78bfa;
+  --color-slate-600: #94a3b8;
+  --color-stone-600: #a8a29e;
+  --color-zinc-600: #a1a1aa;
+  --color-gray-500: #9ca3af;
+
+  /* Selected-chip foregrounds (the `-300` shade). */
+  --color-emerald-700: #6ee7b7;
+  --color-lime-700: #bef264;
+  --color-red-700: #fca5a5;
+  --color-rose-700: #fda4af;
+  --color-amber-700: #fcd34d;
+  --color-yellow-700: #fde047;
+  --color-orange-700: #fdba74;
+  --color-sky-700: #7dd3fc;
+  --color-teal-700: #5eead4;
+  --color-cyan-700: #67e8f9;
+  --color-indigo-700: #a5b4fc;
+  --color-violet-700: #c4b5fd;
+  --color-slate-700: #cbd5e1;
+  --color-stone-700: #d6d3d1;
+  --color-zinc-700: #d4d4d8;
+  --color-gray-700: #d1d5db;
+
+  /* Badge foregrounds (`bg-*-50 text-*-800`) and the POS low-stock banner (`text-amber-900`). */
+  --color-emerald-800: #a7f3d0;
+  --color-amber-800: #fde68a;
+  --color-red-800: #fecaca;
+  --color-amber-900: #fef3c7;
+}
+
+@theme inline {
+  --color-page: var(--surface-page);
+  --color-card: var(--surface-card);
+  --color-chart-surface: var(--surface-chart);
+  --color-ink: var(--ink-primary);
+  --color-ink-secondary: var(--ink-secondary);
+  --color-ink-muted: var(--ink-muted);
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-hover: var(--brand-hover);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-ink: var(--accent-ink);
+  --color-critical-bg: var(--critical-bg);
+  --color-critical-bg-hover: var(--critical-bg-hover);
+  --color-series-1: var(--series-1);
+  --color-series-2: var(--series-2);
+  --color-series-3: var(--series-3);
+  --color-series-4: var(--series-4);
+  --color-series-5: var(--series-5);
+  --color-series-6: var(--series-6);
+  --color-status-good: var(--status-good);
+  --color-status-warning: var(--status-warning);
+  --color-status-critical: var(--status-critical);
+  --font-sans: var(--font-geist-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  background: var(--surface-page);
+  color: var(--ink-primary);
+  font-family: var(--font-sans);
+}
+
+/*
+ * Graph-paper ground for the app's working surfaces. Applied to the scrolling region
+ * rather than <body> so the fixed sidebar keeps its own flat surface, and so the grid
+ * scrolls with the content like real paper would.
+ */
+.app-grid {
+  background-color: var(--surface-page);
+  /*
+   * Four layers: a major rule every 5th cell over a fine grid, as a drafting sheet is
+   * ruled. The major lines give the eye something to measure against at a glance.
+   */
+  background-image:
+    linear-gradient(to right, var(--grid-line-major) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line-major) 1px, transparent 1px),
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size:
+    calc(var(--grid-size) * 5) calc(var(--grid-size) * 5),
+    calc(var(--grid-size) * 5) calc(var(--grid-size) * 5),
+    var(--grid-size) var(--grid-size),
+    var(--grid-size) var(--grid-size);
+}
+
+/*
+ * Dotted leader trailing a sidebar group heading, as on a parts diagram. Drawn with a
+ * repeating gradient so it stretches to whatever space is left beside the label.
+ */
+.dot-leader::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-image: radial-gradient(circle, var(--sidebar-ink-muted) 0.5px, transparent 0.5px);
+  background-size: 4px 1px;
+  background-repeat: repeat-x;
+  opacity: 0.6;
+}
+
+/* Spinner: a soft brand-colored comet sweep instead of a flat two-tone ring */
+@keyframes spinner-rotate {
+  to {
+    transform: rotate(1turn);
+  }
+}
+.spinner {
+  border-radius: 9999px;
+  background: conic-gradient(from 0deg, transparent 0deg, var(--brand-soft) 120deg, var(--brand) 270deg, var(--brand-strong) 1turn);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2.5px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2.5px));
+  animation: spinner-rotate 0.8s linear infinite;
+  filter: drop-shadow(0 0 4px rgba(200, 30, 30, 0.3));
+}
+
+/* Dialog entrance */
+@keyframes dialog-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes dialog-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/*
+ * Machined plate. Square corners, full stop — a milled part has edges, not fillets.
+ *
+ * With the radius gone, the plate has to read as metal some other way, so a single
+ * hairline highlight sits along the top edge where light would catch. The heavy
+ * bevel/drop-shadow stack from the earlier pass is deliberately dropped: square edges plus
+ * flat surfaces is the cleaner, more technical result the shop floor actually wants.
+ */
+.card {
+  background: var(--surface-card);
+  border: 1px solid var(--card-border);
+  border-radius: 0;
+  box-shadow: inset 0 1px 0 var(--bevel-light);
+}
+
+/*
+ * Corner ticks, in the manner of extension lines on a dimensioned drawing. They mark a
+ * plate's extents without the literalism of drawn fasteners, and they cost two gradients
+ * instead of four positioned elements.
+ */
+.ticked {
+  position: relative;
+}
+.ticked::before,
+.ticked::after {
+  content: "";
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  pointer-events: none;
+  border-color: var(--tick);
+  border-style: solid;
+}
+.ticked::before {
+  top: -1px;
+  left: -1px;
+  border-width: 2px 0 0 2px;
+}
+.ticked::after {
+  right: -1px;
+  bottom: -1px;
+  border-width: 0 2px 2px 0;
+}
+
+/*
+ * Dimension rule: a hairline with end ticks, used to separate a header from its body the
+ * way a drawing separates a title block from the field.
+ */
+.dim-rule {
+  position: relative;
+  height: 1px;
+  background: var(--seam);
+}
+.dim-rule::before,
+.dim-rule::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  width: 1px;
+  height: 5px;
+  background: var(--tick);
+}
+.dim-rule::before {
+  left: 0;
+}
+.dim-rule::after {
+  right: 0;
+}
+
+/*
+ * Header tint for chrome strips (rails, plate headers, tool bars). A flat wash rather than
+ * the streaked brush texture used earlier — with square edges everywhere, the texture read
+ * as noise and fought the type sitting on it.
+ */
+.brushed {
+  background-color: color-mix(in oklab, var(--ink-primary) 2.5%, transparent);
+}
+
+/* Knurled grip band — the milled texture on a dial or tool handle. Decorative only. */
+.knurled {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--seam) 0 1px,
+    transparent 1px 5px
+  );
+}
+
+/*
+ * Indicator lamp. A small dot that reads as lit rather than merely coloured, for live
+ * states (an open shift, a job on the bench).
+ */
+.lamp {
+  box-shadow: 0 0 0 2px color-mix(in oklab, currentColor 18%, transparent), 0 0 8px currentColor;
+}
+
+/*
+ * Square-edge override.
+ *
+ * The app carries ~214 `rounded-*` utilities across screens that predate this design
+ * language. Rather than rewrite every call site — and re-introduce arcs on the next page
+ * someone adds — the radius is zeroed here for everything inside the app chrome.
+ *
+ * `rounded-full` is the deliberate exception, and it is left alone on purpose: it marks
+ * the handful of elements that are *circles*, not merely soft-cornered rectangles —
+ * progress tracks, timeline dots, list bullets, avatars and icon medallions. Squaring
+ * those makes them read as rendering glitches rather than as a design choice, so the
+ * sweep flattens the soft rectangles and leaves the circles intact.
+ *
+ * `.keep-round` opts an element out explicitly, for cases the class list can't express.
+ */
+.app-square
+  :where(
+    *:not(.spinner):not(.lamp):not(.keep-round):not(.keep-round *):not(.rounded-full):not(
+        [class*="rounded-full"]
+      )
+  ) {
+  border-radius: 0 !important;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * Technical caption. Identifiers, readouts and section labels are set in mono with wide
+ * tracking — the convention of a gauge face or a parts diagram, and it also makes codes
+ * like plates and job numbers easier to read character by character.
+ */
+.tech-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* Large numeric readout, as on an instrument face. */
+.readout {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/*
+ * Mechanical motion: fast out, settled hard, no overshoot. Machines do not bounce, and a
+ * bouncy easing would undercut the whole instrument metaphor.
+ */
+.mech {
+  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+/* Receipt/statement/report printing: show only the printable area */
+@media print {
+  /*
+   * Printable surfaces are `text-black` on `bg-white` and only ever visible here. Dark mode
+   * flips --color-black to white, which would print invisible ink, so restore the light tokens
+   * for print regardless of the active theme.
+   */
+  :root,
+  :root[data-theme="dark"] {
+    color-scheme: light;
+    --color-black: #000000;
+    --surface-page: #ffffff;
+    --surface-card: #ffffff;
+    --ink-primary: #0b0b0b;
+    --ink-secondary: #52514e;
+    --ink-muted: #898781;
+    --card-border: rgba(11, 11, 11, 0.08);
+    --card-shadow: transparent;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+  #receipt-print,
+  #receipt-print *,
+  #statement-print,
+  #statement-print *,
+  #monthly-report-print,
+  #monthly-report-print * {
+    visibility: visible;
+  }
+  #receipt-print {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80mm;
+    background: white;
+  }
+  #statement-print,
+  #monthly-report-print {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: white;
+  }
+}

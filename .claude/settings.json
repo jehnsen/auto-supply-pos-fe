@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx eslint *)",
+      "Bash(xargs grep -l \"set-state-in-effect\")",
+      "Skill(run)",
+      "Skill(run:*)",
+      "Bash(\"/c/Program Files/Google/Chrome/Application/chrome.exe\" --headless=new --disable-gpu --no-sandbox --screenshot=\"C:/Users/252164~1.JEN/AppData/Local/Temp/claude/d--xampp-apache-bin-FE-agri-pos-frontend/533ad344-f12e-4796-bba6-34e1ef2754fa/scratchpad/login.png\" --window-size=1280,900 --virtual-time-budget=5000 \"http://localhost:3000/login\")",
+      "Read(//tmp/**)",
+      "Bash(timeout 30 bash -c 'until curl -sf http://localhost:3002 >/dev/null 2>&1; do sleep 1; done')",
+      "Bash(\"/c/Program Files/Google/Chrome/Application/chrome.exe\" --headless=new --disable-gpu --no-sandbox --screenshot=\"C:/Users/252164~1.JEN/AppData/Local/Temp/claude/d--xampp-apache-bin-FE-agri-pos-frontend/533ad344-f12e-4796-bba6-34e1ef2754fa/scratchpad/login.png\" --window-size=1280,900 --virtual-time-budget=5000 \"http://localhost:3002/login\")",
+      "Bash(\"/c/Program Files/Google/Chrome/Application/chrome.exe\" --headless=new --disable-gpu --no-sandbox --screenshot=\"C:/Users/252164~1.JEN/AppData/Local/Temp/claude/d--xampp-apache-bin-FE-agri-pos-frontend/533ad344-f12e-4796-bba6-34e1ef2754fa/scratchpad/guard.png\" --window-size=1280,900 --virtual-time-budget=6000 \"http://localhost:3002/products\")",
+      "Bash(tail -n 60 /tmp/agripos-dev.log)",
+      "Bash(\"/c/Program Files/Google/Chrome/Application/chrome.exe\" --headless=new --disable-gpu --no-sandbox --screenshot=\"C:/Users/252164~1.JEN/AppData/Local/Temp/claude/d--xampp-apache-bin-FE-agri-pos-frontend/533ad344-f12e-4796-bba6-34e1ef2754fa/scratchpad/guard2.png\" --window-size=1280,900 --virtual-time-budget=6000 \"http://localhost:3002/products\")",
+      "Bash(curl -s -o /tmp/backend_check.json -w \"HTTP %{http_code}\\\\n\" http://localhost:8000/api/v1/products?page=1\\\\&per_page=1)",
+      "Bash(curl -s -o /tmp/login_check.json -w \"HTTP %{http_code}\\\\n\" -X POST http://localhost:8000/api/v1/auth/login -H \"Content-Type: application/json\" -H \"Accept: application/json\" -d '{\"email\":\"juan@goldenharvestagri.ph\",\"password\":\"password\"}')",
+      "Bash(node -e \"try{require.resolve\\('puppeteer-core'\\); console.log\\('puppeteer-core: yes'\\)}catch\\(e\\){console.log\\('puppeteer-core: no'\\)}\")",
+      "Bash(npm ls *)",
+      "Bash(node cdp-login-test.mjs)",
+      "Bash(curl -s \"http://localhost:9333/json/new?http%3A%2F%2Flocalhost%3A3002%2Flogin\")",
+      "Bash(curl -s -i -X OPTIONS http://localhost:8000/api/v1/auth/login -H 'Origin: http://localhost:3002' -H 'Access-Control-Request-Method: POST' -H 'Access-Control-Request-Headers: content-type')",
+      "Read(//d/xampp/apache/bin/agri-pos-backend/**)",
+      "Bash(grep -n \"CORS_ALLOWED_ORIGIN\" .env)",
+      "Bash(cd \"d:\\\\xampp\\\\apache\\\\bin\\\\agri-pos-backend\" && grep -n \"^CORS_\" .env; echo \"---\"; grep -n \"^APP_URL\\\\|^FRONTEND\" .env)",
+      "Bash(php artisan *)",
+      "Bash(node cdp-products-test.mjs)",
+      "Bash(netstat -ano)",
+      "Bash(taskkill //F //PID 27656)",
+      "Bash(curl -s -X POST http://localhost:8000/api/v1/auth/login -H \"Content-Type: application/json\" -H \"Accept: application/json\" -d '{\"email\":\"juan@goldenharvestagri.ph\",\"password\":\"password\"}')",
+      "Read(//d/xampp/**)",
+      "Bash(cmd.exe /c \"start \\\\\"\\\\\" /D D:\\\\\\\\xampp /B D:\\\\\\\\xampp\\\\\\\\mysql_start.bat\")",
+      "Bash(curl -s -o /dev/null -w \"backend HTTP %{http_code}\\\\n\" http://localhost:8000/api/v1/auth/login -X POST -H \"Content-Type: application/json\" -d '{\"email\":\"x\",\"password\":\"x\"}')",
+      "Bash(tasklist)",
+      "Bash(timeout 30 bash -c 'until grep -q \"Ready in\" /tmp/agripos-dev2.log 2>/dev/null; do sleep 1; done')",
+      "Bash(node cdp-shot.mjs \"C:/Users/252164~1.JEN/AppData/Local/Temp/claude/d--xampp-apache-bin-FE-agri-pos-frontend/533ad344-f12e-4796-bba6-34e1ef2754fa/scratchpad/final-login.png\")",
+      "Bash(taskkill //F //IM chrome.exe //T)",
+      "Bash(taskkill //F //PID 31500)"
+    ],
+    "additionalDirectories": [
+      "d:\\xampp\\apache\\bin\\agri-pos-backend"
+    ]
+  }
+}

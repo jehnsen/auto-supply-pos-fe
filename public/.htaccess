@@ -1,0 +1,24 @@
+# Next.js static export (output: "export") served by Apache.
+# All routes were built with trailingSlash: true, so most paths resolve
+# directly to <path>/index.html via Apache's default DirectoryIndex —
+# no rewrite needed for those.
+#
+# The one dynamic route (customers/[uuid]) was built with a single
+# "placeholder" param at build time. Any real customer UUID in the URL
+# is rewritten to that placeholder's static HTML; the page then reads
+# the real uuid client-side from the browser URL via useParams().
+
+RewriteEngine On
+
+# /customers/<uuid>/statement/  ->  /customers/placeholder/statement/index.html
+RewriteRule ^customers/[^/]+/statement/?$ /customers/placeholder/statement/index.html [L]
+
+# /customers/<uuid>/  ->  /customers/placeholder/index.html
+RewriteRule ^customers/[^/]+/?$ /customers/placeholder/index.html [L]
+
+# Fallback 404
+ErrorDocument 404 /404.html
+
+# XAMPP's htdocs ships a default index.php; without this, Apache's
+# DirectoryIndex would serve that instead of our app's index.html.
+DirectoryIndex index.html
