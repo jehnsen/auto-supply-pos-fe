@@ -1,20 +1,14 @@
 # Next.js static export (output: "export") served by Apache.
-# All routes were built with trailingSlash: true, so most paths resolve
-# directly to <path>/index.html via Apache's default DirectoryIndex —
-# no rewrite needed for those.
 #
-# The one dynamic route (customers/[uuid]) was built with a single
-# "placeholder" param at build time. Any real customer UUID in the URL
-# is rewritten to that placeholder's static HTML; the page then reads
-# the real uuid client-side from the browser URL via useParams().
+# Every route is a real directory with an index.html, because the app was built with
+# trailingSlash: true — Apache's default DirectoryIndex resolves them without help.
+#
+# Detail screens (a job order, a customer, a statement) address their record with a
+# query string — /service-tickets/ticket/?id=<uuid> — rather than a path segment, so
+# there are no unknown paths to rewrite. A static export cannot pre-render a uuid that
+# does not exist at build time, and this keeps the app working on any plain file host.
 
 RewriteEngine On
-
-# /customers/<uuid>/statement/  ->  /customers/placeholder/statement/index.html
-RewriteRule ^customers/[^/]+/statement/?$ /customers/placeholder/statement/index.html [L]
-
-# /customers/<uuid>/  ->  /customers/placeholder/index.html
-RewriteRule ^customers/[^/]+/?$ /customers/placeholder/index.html [L]
 
 # Fallback 404
 ErrorDocument 404 /404.html

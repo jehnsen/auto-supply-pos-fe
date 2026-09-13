@@ -11,7 +11,7 @@ export default function LoginPage() {
   const router = useRouter();
   const login = useAuthStore((s) => s.login);
   const status = useAuthStore((s) => s.status);
-  const [email, setEmail] = useState("super_admin@luckyj.ph");
+  const [email, setEmail] = useState("owner@immersons.ph");
   const [password, setPassword] = useState("P@ssword8080");
   const [error, setError] = useState<string | null>(null);
 

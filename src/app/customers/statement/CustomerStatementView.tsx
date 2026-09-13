@@ -1,18 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { AlertTriangle, ArrowLeft, Download, FileText, Printer } from "lucide-react";
 import { getCustomerStatement, type CustomerStatement } from "@/lib/api/customers";
 import { getStoreProfile, type StoreProfile } from "@/lib/api/settings";
 import { ApiError } from "@/lib/api/client";
 import { useAuthStore } from "@/lib/auth-store";
+import { useRecordId } from "@/lib/use-record-id";
 import { downloadCSV, formatDate } from "@/lib/utils";
 import { Button, EmptyState, Field, Input, PageHeader, Spinner, Table, Td, Th } from "@/components/ui";
 import StatementPrint from "@/components/StatementPrint";
 
 export default function CustomerStatementView() {
-  const params = useParams<{ uuid: string }>();
+  // Addressed as ?id=<uuid>; see `useRecordId`.
+  const uuid = useRecordId();
   const router = useRouter();
   const currency = useAuthStore((s) => s.user?.store.currency) ?? "PHP";
   const money = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency, minimumFractionDigits: 2 }).format(n);
@@ -30,7 +32,7 @@ export default function CustomerStatementView() {
       setLoading(true);
       setError(null);
       try {
-        const [s, p] = await Promise.all([getCustomerStatement(params.uuid, from, to), store ? Promise.resolve(store) : getStoreProfile()]);
+        const [s, p] = await Promise.all([getCustomerStatement(uuid, from, to), store ? Promise.resolve(store) : getStoreProfile()]);
         if (cancelled) return;
         setStatement(s);
         setStore(p);
@@ -45,7 +47,7 @@ export default function CustomerStatementView() {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params.uuid, from, to]);
+  }, [uuid, from, to]);
 
   function downloadStatementCSV() {
     if (!statement) return;
@@ -59,7 +61,7 @@ export default function CustomerStatementView() {
   return (
     <div className="p-6">
       <button
-        onClick={() => router.push(`/customers/${params.uuid}`)}
+        onClick={() => router.push(`/customers/detail?id=${uuid}`)}
         className="mb-3 flex items-center gap-1.5 text-sm text-ink-secondary hover:text-ink cursor-pointer print:hidden"
       >
         <ArrowLeft size={14} /> Back to customer

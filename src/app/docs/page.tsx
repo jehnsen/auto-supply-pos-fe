@@ -677,11 +677,11 @@ function RepairManualSection() {
         That is what makes it worth anything as evidence.
       </div>
 
-      <div className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-        <strong>Where job orders are stored.</strong> Repair jobs and vehicles are currently saved in this browser on
-        this device, not on the server. A job opened on the front-desk PC will not appear on a phone or another
-        browser, and clearing site data clears them. Everything else — sales, stock, customers — is on the server as
-        normal.
+      <div className="rounded-lg border border-brand/20 bg-brand-soft/40 px-4 py-3 text-sm text-ink-secondary">
+        <strong className="text-brand-strong">Where job orders are stored.</strong> Repair jobs and vehicles live on
+        the server alongside sales, stock and customers. A job opened at the front desk shows up on any device signed
+        in to the same shop, and the chain of custody is kept by the server — entries cannot be edited or deleted
+        after the fact.
       </div>
 
       <div className="flex flex-wrap gap-2 pt-1">

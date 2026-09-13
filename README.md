@@ -55,25 +55,26 @@ including a printable monthly report.
 
 ## Where data lives
 
-| Module | Storage |
-| --- | --- |
-| Sales, products, inventory, customers, suppliers, POs, deliveries, AP/AR, shifts, reports | Laravel API (`src/lib/api/*`) |
-| **Repair jobs & vehicles** | **Browser localStorage** (`src/lib/api/local-store.ts`) |
+Everything is served by the Laravel API through `src/lib/api/*` — one module per backend
+resource. There is no client-side persistence layer: the only things in `localStorage` are the
+auth token and two UI preferences (sidebar collapsed, theme).
 
-The backend exposes no service/repair/vehicle endpoints yet, so those two modules persist locally,
-namespaced per store. **Consequences:** a job opened on the front-desk PC will not appear on a phone
-or another browser, and clearing site data clears it.
+### Repair jobs on the API
 
-### Swapping repair jobs onto the API
+`service-tickets.ts` and `vehicles.ts` wrap `/api/v1/service-tickets` and `/api/v1/vehicles`.
+Three details worth knowing before working on them:
 
-`vehicles.ts` and `service-tickets.ts` deliberately mirror the shape of the other API modules —
-async, uuid-addressed functions returning plain records. To move them server-side, rewrite their
-bodies to call `apiRequest` and delete `local-store.ts`. **No page or component needs to change.**
+- **Money crosses the wire in pesos.** The database stores centavos; the API converts on read
+  (`ServiceTicketResource`) and accepts decimals on write, so nothing in the frontend scales
+  amounts. `balance_due` is computed server-side and is preferred over local arithmetic.
+- **Nested collections are `whenLoaded`.** `property`, `lines` and `custody` are omitted
+  entirely by endpoints that don't eager-load them, so the client normalises each to `[]`
+  before handing a ticket to the UI.
+- **Writes return the whole ticket.** Callers replace their local copy from the response
+  rather than refetching.
 
-Two things to preserve on the server:
-
-- Custody events must stay **append-only** — that is the whole point of the module.
-- Ticket numbers should be allocated by the server, not a client-side counter.
+Custody events are append-only and the server enforces it: a correction is a new event that
+supersedes the old one, never an edit. Ticket numbers and claim codes are allocated server-side.
 
 ## Tech notes
 
@@ -99,5 +100,5 @@ src/
     customers/        directory + per-customer vehicles & history
     …                 products, inventory, suppliers, reports, settings
   components/         Shell, ui primitives, charts, pickers, receipt
-  lib/api/            one module per backend resource (+ local-store for repair jobs)
+  lib/api/            one module per backend resource
 ```

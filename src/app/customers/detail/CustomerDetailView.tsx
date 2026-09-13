@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { AlertTriangle, ArrowLeft, FileText, HandCoins, Pencil, UserRound, Wallet } from "lucide-react";
 import {
   getCustomer,
@@ -14,6 +14,7 @@ import {
 } from "@/lib/api/customers";
 import { ApiError } from "@/lib/api/client";
 import { useAuthStore } from "@/lib/auth-store";
+import { useRecordId } from "@/lib/use-record-id";
 import { hasPermission, PERMISSIONS } from "@/lib/permissions";
 import { AdjustCreditLimitModal } from "@/components/AdjustCreditLimitModal";
 import { CustomerVehicles } from "@/components/CustomerVehicles";
@@ -46,7 +47,8 @@ function ratingTone(rating: string): "good" | "warning" | "critical" {
 }
 
 export default function CustomerDetailView() {
-  const params = useParams<{ uuid: string }>();
+  // Addressed as ?id=<uuid>; see `useRecordId`.
+  const uuid = useRecordId();
   const router = useRouter();
   const currency = useAuthStore((s) => s.user?.store.currency) ?? "PHP";
   const money = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency, minimumFractionDigits: 2 }).format(n);
@@ -79,7 +81,7 @@ export default function CustomerDetailView() {
       setLoading(true);
       setError(null);
       try {
-        const c = await getCustomer(params.uuid);
+        const c = await getCustomer(uuid);
         if (!cancelled) setCustomer(c);
       } catch (err) {
         if (!cancelled) setError(err instanceof ApiError ? err.message : "Failed to load customer");
@@ -91,14 +93,14 @@ export default function CustomerDetailView() {
     return () => {
       cancelled = true;
     };
-  }, [params.uuid, refreshKey]);
+  }, [uuid, refreshKey]);
 
   useEffect(() => {
     let cancelled = false;
     async function run() {
       setTxLoading(true);
       try {
-        const res = await getCustomerTransactions(params.uuid, txPage);
+        const res = await getCustomerTransactions(uuid, txPage);
         if (cancelled) return;
         setTransactions(res.items);
         setTxLastPage(res.lastPage);
@@ -112,13 +114,13 @@ export default function CustomerDetailView() {
     return () => {
       cancelled = true;
     };
-  }, [params.uuid, txPage, refreshKey]);
+  }, [uuid, txPage, refreshKey]);
 
   async function handleSave(payload: CustomerWritePayload) {
     setSaving(true);
     setSaveError(null);
     try {
-      await updateCustomer(params.uuid, payload);
+      await updateCustomer(uuid, payload);
       setEditing(false);
       refetch();
     } catch (err) {
@@ -162,7 +164,7 @@ export default function CustomerDetailView() {
         subtitle={`${customer.code} · ${typeLabel(customer.type)}${customer.is_active ? "" : " · Inactive"}`}
         actions={
           <>
-            <Button variant="secondary" onClick={() => router.push(`/customers/${params.uuid}/statement`)}>
+            <Button variant="secondary" onClick={() => router.push(`/customers/statement?id=${uuid}`)}>
               <FileText size={15} /> Statement
             </Button>
             {canManageCredit && customer.total_outstanding > 0 && (
@@ -239,7 +241,7 @@ export default function CustomerDetailView() {
         </div>
 
         <div className="lg:col-span-3">
-          <CustomerVehicles customerUuid={params.uuid} customerName={customer.name} />
+          <CustomerVehicles customerUuid={uuid} customerName={customer.name} />
         </div>
 
         <div className="card lg:col-span-2">

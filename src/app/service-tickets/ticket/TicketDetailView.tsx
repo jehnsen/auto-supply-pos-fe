@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -42,6 +42,7 @@ import {
   type TicketStatus,
 } from "@/lib/api/service-tickets";
 import { useAuthStore } from "@/lib/auth-store";
+import { useRecordId } from "@/lib/use-record-id";
 import { Caption, Chip, DataRow } from "@/components/panel";
 import { cx, formatDate, formatDateTime } from "@/lib/utils";
 import {
@@ -62,7 +63,8 @@ import {
 import { TicketSlipPrint } from "./TicketSlipPrint";
 
 export default function TicketDetailView() {
-  const params = useParams<{ uuid: string }>();
+  // Addressed as /service-tickets/ticket?id=<uuid> — see `useRecordId` for why.
+  const uuid = useRecordId();
   const router = useRouter();
   const user = useAuthStore((s) => s.user);
   const currency = user?.store.currency ?? "PHP";
@@ -88,7 +90,7 @@ export default function TicketDetailView() {
 
   const load = useCallback(async () => {
     try {
-      const found = await getTicket(params.uuid);
+      const found = await getTicket(uuid);
       if (!found) {
         setNotFound(true);
         return;
@@ -98,7 +100,7 @@ export default function TicketDetailView() {
     } finally {
       setLoading(false);
     }
-  }, [params.uuid]);
+  }, [uuid]);
 
   useEffect(() => {
     load();
@@ -129,7 +131,9 @@ export default function TicketDetailView() {
         <AlertTriangle size={28} className="text-status-critical" />
         <p className="text-sm font-medium text-status-critical">Job order not found</p>
         <p className="max-w-sm text-xs text-ink-muted">
-          Job orders are stored in this browser. A job opened on another device or browser profile won&apos;t appear here.
+          {uuid
+            ? "No job order matches that id. It may have been cancelled, or the link may be incomplete."
+            : "No job order was specified. Open one from the repair board."}
         </p>
         <Button variant="secondary" size="sm" onClick={() => router.push("/service-tickets")}>
           Back to repair jobs

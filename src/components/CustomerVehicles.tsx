@@ -100,7 +100,7 @@ export function CustomerVehicles({ customerUuid, customerName }: { customerUuid:
                     {history.slice(0, 4).map((t) => (
                       <Link
                         key={t.uuid}
-                        href={`/service-tickets/${t.uuid}`}
+                        href={`/service-tickets/ticket?id=${t.uuid}`}
                         prefetch={false}
                         className="flex items-center justify-between gap-2 rounded-md px-2 py-1 text-xs transition-colors hover:bg-black/[0.03]"
                       >

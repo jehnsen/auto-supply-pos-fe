@@ -215,7 +215,7 @@ export default function RepairBoardPage() {
                         ticket={t}
                         selected={selected.includes(t.uuid)}
                         onSelect={() => toggleSelect(t.uuid)}
-                        onOpen={() => router.push(`/service-tickets/${t.uuid}`)}
+                        onOpen={() => router.push(`/service-tickets/ticket?id=${t.uuid}`)}
                       />
                     ))
                   )}
@@ -245,7 +245,7 @@ export default function RepairBoardPage() {
                   <tr key={t.uuid} className="transition-colors hover:bg-black/[0.02]">
                     <Td>
                       <Link
-                        href={`/service-tickets/${t.uuid}`}
+                        href={`/service-tickets/ticket?id=${t.uuid}`}
                         prefetch={false}
                         className="font-mono text-xs font-semibold text-brand-strong hover:underline"
                       >

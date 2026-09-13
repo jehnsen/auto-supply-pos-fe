@@ -88,7 +88,14 @@ const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
 ];
 
 export default function Shell({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
+  const rawPathname = usePathname();
+  /*
+   * `trailingSlash: true` means the browser reports "/service-tickets/", not
+   * "/service-tickets". An exact-match nav row would never light up without this — which
+   * is why only the Repair Board failed to highlight: its siblings match by prefix, and a
+   * prefix test tolerates the extra slash. AppShell normalises the same way.
+   */
+  const pathname = rawPathname.length > 1 ? rawPathname.replace(/\/$/, "") : rawPathname;
   const router = useRouter();
   const { theme, toggle: toggleTheme } = useTheme();
   const user = useAuthStore((s) => s.user);

@@ -97,8 +97,8 @@ export default function DaySheetPage() {
   return (
     <div className="p-6">
       <CounterHeader
-        title="Day sheet"
-        subtitle={`What is late, what is waiting, and what needs a decision at ${user?.store.name ?? "the shop"}.`}
+        title="Dashboard"
+        subtitle=""
         actions={
           <>
             <Link href="/service-tickets/intake" prefetch={false}>
@@ -357,7 +357,7 @@ function JobList({
         return (
           <Link
             key={t.uuid}
-            href={`/service-tickets/${t.uuid}`}
+            href={`/service-tickets/ticket?id=${t.uuid}`}
             prefetch={false}
             className="flex items-center justify-between gap-3 px-4 py-2.5 transition-colors hover:bg-black/[0.02]"
           >

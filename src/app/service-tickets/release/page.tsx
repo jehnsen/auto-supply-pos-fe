@@ -79,7 +79,7 @@ export default function ReleasePage() {
         },
         { uuid: user?.uuid ?? null, name: user?.name ?? "Staff" }
       );
-      router.push(`/service-tickets/${ticket.uuid}`);
+      router.push(`/service-tickets/ticket?id=${ticket.uuid}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not release the vehicle");
       setReleasing(false);
