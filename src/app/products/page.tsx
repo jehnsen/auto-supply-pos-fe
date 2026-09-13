@@ -8,6 +8,7 @@ import {
   getProductByUuid,
   listProducts,
   updateProduct,
+  type ProductCondition,
   type ProductDetail,
   type ProductListItem,
   type ProductWritePayload,
@@ -176,12 +177,30 @@ export default function ProductsPage() {
   function exportCSV() {
     downloadCSV(
       "products.csv",
-      ["SKU", "Barcode", "Name", "Brand", "Cost", "Retail", "Wholesale", "Bulk", "Stock", "Reorder point", "Status"],
+      [
+        "SKU",
+        "Barcode",
+        "Part number",
+        "Name",
+        "Brand",
+        "Condition",
+        "Fits",
+        "Cost",
+        "Retail",
+        "Wholesale",
+        "Bulk",
+        "Stock",
+        "Reorder point",
+        "Status",
+      ],
       products.map((p) => [
         p.sku,
         p.barcode ?? "",
+        p.part_number ?? "",
         p.name,
         p.brand ?? "",
+        p.condition,
+        p.fitment ?? "",
         p.cost_price,
         p.retail_price,
         p.wholesale_price,
@@ -248,7 +267,12 @@ export default function ProductsPage() {
         <div className="flex flex-wrap gap-2 border-b border-black/[0.07] p-3">
           <div className="relative w-full max-w-xs">
             <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted" />
-            <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search name, SKU, or barcode…" className="pl-9" />
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search name, SKU, barcode, or part number…"
+              className="pl-9"
+            />
           </div>
           <Select value={categoryFilter} onChange={(e) => updateCategoryFilter(e.target.value)} className="w-44">
             <option value="all">All categories</option>
@@ -334,10 +358,14 @@ export default function ProductsPage() {
                           VAT-exempt
                         </Badge>
                       )}
+                      {p.fitment && <div className="mt-0.5 text-xs text-ink-muted">Fits: {p.fitment}</div>}
                     </Td>
                     <Td>
                       <span className="font-mono text-xs">{p.sku}</span>
                       {p.barcode && <span className="ml-2 font-mono text-xs text-ink-muted">{p.barcode}</span>}
+                      {p.part_number && (
+                        <div className="mt-0.5 font-mono text-xs text-ink-muted">P/N: {p.part_number}</div>
+                      )}
                     </Td>
                     <Td right>{money(p.cost_price)}</Td>
                     <Td right className="font-medium">
@@ -467,6 +495,9 @@ function ProductForm({
     size: product?.size ?? "",
     material: product?.material ?? "",
     color: product?.color ?? "",
+    partNumber: product?.part_number ?? "",
+    fitment: product?.fitment ?? "",
+    condition: product?.condition ?? "new",
     categoryId: product?.category?.id != null ? String(product.category.id) : "",
     unitId: product?.unit?.id?.toString() ?? "",
     costPrice: product?.cost_price?.toString() ?? "",
@@ -498,6 +529,9 @@ function ProductForm({
       size: form.size.trim() || null,
       material: form.material.trim() || null,
       color: form.color.trim() || null,
+      part_number: form.partNumber.trim() || null,
+      fitment: form.fitment.trim() || null,
+      condition: form.condition,
       category_id: form.categoryId.trim() ? Number(form.categoryId) : null,
       unit_id: form.unitId.trim() || null,
       cost_price: costPrice,
@@ -534,10 +568,10 @@ function ProductForm({
       {error && <p className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-status-critical">{error}</p>}
       <div className="grid grid-cols-2 gap-3">
         <Field label="Name" className="col-span-2">
-          <Input autoFocus value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="e.g. SL-8H Hybrid Rice Seeds 5kg" />
+          <Input autoFocus value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="e.g. Spark Plug Standard" />
         </Field>
         <Field label="SKU">
-          <Input value={form.sku} onChange={(e) => set("sku", e.target.value)} placeholder="e.g. GHA-1001" />
+          <Input value={form.sku} onChange={(e) => set("sku", e.target.value)} placeholder="e.g. SPS-1001" />
         </Field>
         <Field label="Barcode">
           <Input value={form.barcode} onChange={(e) => set("barcode", e.target.value)} placeholder="EAN / UPC" />
@@ -546,7 +580,30 @@ function ProductForm({
           <Input value={form.brand} onChange={(e) => set("brand", e.target.value)} />
         </Field>
         <Field label="Size">
-          <Input value={form.size} onChange={(e) => set("size", e.target.value)} placeholder="e.g. 5kg" />
+          <Input value={form.size} onChange={(e) => set("size", e.target.value)} placeholder="e.g. 1pc" />
+        </Field>
+        <Field label="Part number">
+          <Input
+            value={form.partNumber}
+            onChange={(e) => set("partNumber", e.target.value)}
+            placeholder="OEM / manufacturer part no."
+          />
+        </Field>
+        <Field label="Condition">
+          <Select value={form.condition} onChange={(e) => set("condition", e.target.value as ProductCondition)}>
+            <option value="new">New</option>
+            <option value="oem">OEM</option>
+            <option value="aftermarket">Aftermarket</option>
+            <option value="refurbished">Refurbished</option>
+            <option value="used">Used</option>
+          </Select>
+        </Field>
+        <Field label="Compatible vehicles" className="col-span-2">
+          <Input
+            value={form.fitment}
+            onChange={(e) => set("fitment", e.target.value)}
+            placeholder="e.g. Toyota Vios 2014-2018, Honda City 2015-2020"
+          />
         </Field>
         <Field label="Category">
           <Select value={form.categoryId} onChange={(e) => set("categoryId", e.target.value)}>

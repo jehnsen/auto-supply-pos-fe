@@ -13,6 +13,8 @@ export interface ProductUnit {
   abbreviation: string;
 }
 
+export type ProductCondition = "new" | "oem" | "aftermarket" | "refurbished" | "used";
+
 /** Shape returned by the products list endpoint. */
 export interface ProductListItem {
   uuid: string;
@@ -24,6 +26,9 @@ export interface ProductListItem {
   size: string | null;
   material: string | null;
   color: string | null;
+  part_number: string | null;
+  fitment: string | null;
+  condition: ProductCondition;
   cost_price: number;
   retail_price: number;
   wholesale_price: number;
@@ -122,6 +127,9 @@ export interface ProductWritePayload {
   size?: string | null;
   material?: string | null;
   color?: string | null;
+  part_number?: string | null;
+  fitment?: string | null;
+  condition?: ProductCondition;
   category_id?: number | null;
   unit_id?: string | null;
   cost_price: number;
