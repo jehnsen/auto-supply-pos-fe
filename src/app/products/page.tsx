@@ -17,7 +17,7 @@ import { listUnits, type Unit } from "@/lib/api/units";
 import { ApiError } from "@/lib/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import { hasPermission, PERMISSIONS } from "@/lib/permissions";
-import { cx, downloadCSV } from "@/lib/utils";
+import { cx, downloadCSV, formatMoney } from "@/lib/utils";
 import {
   Badge,
   Button,
@@ -47,7 +47,7 @@ export default function ProductsPage() {
   const canDelete = useAuthStore((s) => hasPermission(s.user?.role, s.permissions, PERMISSIONS.PRODUCTS_DELETE));
   const canManageRow = canEdit || canDelete;
   const money = (n: number) =>
-    new Intl.NumberFormat("en-US", { style: "currency", currency, minimumFractionDigits: 2 }).format(n);
+    formatMoney(n, currency);
 
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");

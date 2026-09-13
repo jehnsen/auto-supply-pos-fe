@@ -16,7 +16,7 @@ import { ApiError } from "@/lib/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import { hasPermission, PERMISSIONS } from "@/lib/permissions";
 import { AdjustCreditLimitModal } from "@/components/AdjustCreditLimitModal";
-import { cx, downloadCSV, formatDate } from "@/lib/utils";
+import { cx, downloadCSV, formatDate, formatMoney } from "@/lib/utils";
 import {
   Button,
   ConfirmDialog,
@@ -52,7 +52,7 @@ function typeLabel(type: string): string {
 export default function CustomersPage() {
   const router = useRouter();
   const currency = useAuthStore((s) => s.user?.store.currency) ?? "PHP";
-  const money = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency, minimumFractionDigits: 2 }).format(n);
+  const money = (n: number) => formatMoney(n, currency);
   const canCreate = useAuthStore((s) => hasPermission(s.user?.role, s.permissions, PERMISSIONS.CUSTOMERS_CREATE));
   const canEdit = useAuthStore((s) => hasPermission(s.user?.role, s.permissions, PERMISSIONS.CUSTOMERS_EDIT));
   const canDelete = useAuthStore((s) => hasPermission(s.user?.role, s.permissions, PERMISSIONS.CUSTOMERS_DELETE));

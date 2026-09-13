@@ -15,7 +15,7 @@ import { useAuthStore } from "@/lib/auth-store";
 import { CounterHeader } from "@/components/CounterHeader";
 import { Caption, Chip, DataRow, Panel } from "@/components/panel";
 import { Button, Field, Input, Spinner, Textarea } from "@/components/ui";
-import { cx, formatDate } from "@/lib/utils";
+import { cx, formatDate, formatMoney } from "@/lib/utils";
 
 const PAYMENT_METHODS = ["Cash", "GCash", "Maya", "Card", "Bank transfer"];
 
@@ -24,7 +24,7 @@ export default function ReleasePage() {
   const user = useAuthStore((s) => s.user);
   const currency = user?.store.currency ?? "PHP";
   const money = (n: number) =>
-    new Intl.NumberFormat("en-US", { style: "currency", currency, minimumFractionDigits: 2 }).format(n);
+    formatMoney(n, currency);
 
   const [code, setCode] = useState("");
   const [ticket, setTicket] = useState<ServiceTicket | null>(null);

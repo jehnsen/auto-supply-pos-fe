@@ -22,7 +22,7 @@ import {
 import { getStoreProfile, type StoreProfile } from "@/lib/api/settings";
 import { ApiError } from "@/lib/api/client";
 import { useAuthStore } from "@/lib/auth-store";
-import { downloadCSV, formatDate, formatQty, toNum } from "@/lib/utils";
+import { downloadCSV, formatDate, formatQty, toNum, formatMoney } from "@/lib/utils";
 import { Badge, Button, EmptyState, Input, PageHeader, Spinner, Table, Td, Th } from "@/components/ui";
 import { ColumnChart, MeterList, SERIES_1, SERIES_2, StatTile } from "@/components/charts";
 import MonthlyReportPrint from "@/components/MonthlyReportPrint";
@@ -49,7 +49,7 @@ interface MonthlyData {
 export default function MonthlyReportPage() {
   const router = useRouter();
   const currency = useAuthStore((s) => s.user?.store.currency) ?? "PHP";
-  const money = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency, minimumFractionDigits: 2 }).format(n);
+  const money = (n: number) => formatMoney(n, currency);
 
   const [ym, setYm] = useState(() => new Date().toISOString().slice(0, 7));
   const [data, setData] = useState<MonthlyData | null>(null);

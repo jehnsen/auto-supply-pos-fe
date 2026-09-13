@@ -12,7 +12,7 @@ import { createVehicle, describeVehicle, VEHICLE_KIND_LABELS, type Vehicle, type
 import { createTicket } from "@/lib/api/service-tickets";
 import { useAuthStore } from "@/lib/auth-store";
 import type { Customer } from "@/lib/api/customers";
-import { cx, formatDate } from "@/lib/utils";
+import { cx, formatDate, formatMoney } from "@/lib/utils";
 
 /** Common complaints, tapped instead of typed when the counter is busy. */
 const COMPLAINT_TAGS = [
@@ -59,7 +59,7 @@ export default function IntakePage() {
   const user = useAuthStore((s) => s.user);
   const currency = user?.store.currency ?? "PHP";
   const money = (n: number) =>
-    new Intl.NumberFormat("en-US", { style: "currency", currency, minimumFractionDigits: 2 }).format(n);
+    formatMoney(n, currency);
 
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);

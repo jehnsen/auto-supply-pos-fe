@@ -13,7 +13,7 @@ import {
 import { getCreditCollectionReport, type CreditCollectionReport } from "@/lib/api/reports";
 import { ApiError } from "@/lib/api/client";
 import { useAuthStore } from "@/lib/auth-store";
-import { cx, formatDate } from "@/lib/utils";
+import { cx, formatDate, formatMoney } from "@/lib/utils";
 import { Badge, EmptyState, PageHeader, Segmented, Spinner, Table, Td, Th } from "@/components/ui";
 import { MeterList, SERIES_2, StatTile } from "@/components/charts";
 
@@ -77,7 +77,7 @@ function ReportShell<T>({
 
 export default function AccountsReceivablePage() {
   const currency = useAuthStore((s) => s.user?.store.currency) ?? "PHP";
-  const money = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency, minimumFractionDigits: 2 }).format(n);
+  const money = (n: number) => formatMoney(n, currency);
 
   const [tab, setTab] = useState<"aging" | "overdue" | "collections">("aging");
 

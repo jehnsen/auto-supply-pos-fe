@@ -17,7 +17,7 @@ import {
 } from "@/lib/api/suppliers";
 import { ApiError } from "@/lib/api/client";
 import { useAuthStore } from "@/lib/auth-store";
-import { cx, downloadCSV, formatDate } from "@/lib/utils";
+import { cx, downloadCSV, formatDate, formatMoney } from "@/lib/utils";
 import {
   Badge,
   Button,
@@ -41,7 +41,7 @@ type StatusFilter = "active" | "inactive" | "all";
 
 export default function SuppliersPage() {
   const currency = useAuthStore((s) => s.user?.store.currency) ?? "PHP";
-  const money = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency, minimumFractionDigits: 2 }).format(n);
+  const money = (n: number) => formatMoney(n, currency);
 
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");

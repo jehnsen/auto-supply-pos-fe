@@ -39,7 +39,7 @@ import { getTaxSettings } from "@/lib/api/settings";
 import { getCurrentShift, type Shift } from "@/lib/api/shifts";
 import { ApiError } from "@/lib/api/client";
 import { useAuthStore } from "@/lib/auth-store";
-import { cx, round2 } from "@/lib/utils";
+import { cx, round2, formatMoney } from "@/lib/utils";
 import { Badge, Button, EmptyState, Field, Input, Modal, Spinner } from "@/components/ui";
 import { CategoryGlyph, CategoryIcon, getCategoryBorder, getCategoryChip } from "@/lib/category-icons";
 import { CustomerPicker } from "@/components/CustomerPicker";
@@ -108,7 +108,7 @@ function exitFullscreen(): Promise<void> | undefined {
 
 export default function PosPage() {
   const currency = useAuthStore((s) => s.user?.store.currency) ?? "PHP";
-  const money = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency, minimumFractionDigits: 2 }).format(n);
+  const money = (n: number) => formatMoney(n, currency);
 
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");

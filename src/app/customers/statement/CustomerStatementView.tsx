@@ -8,7 +8,7 @@ import { getStoreProfile, type StoreProfile } from "@/lib/api/settings";
 import { ApiError } from "@/lib/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import { useRecordId } from "@/lib/use-record-id";
-import { downloadCSV, formatDate } from "@/lib/utils";
+import { downloadCSV, formatDate, formatMoney } from "@/lib/utils";
 import { Button, EmptyState, Field, Input, PageHeader, Spinner, Table, Td, Th } from "@/components/ui";
 import StatementPrint from "@/components/StatementPrint";
 
@@ -17,7 +17,7 @@ export default function CustomerStatementView() {
   const uuid = useRecordId();
   const router = useRouter();
   const currency = useAuthStore((s) => s.user?.store.currency) ?? "PHP";
-  const money = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency, minimumFractionDigits: 2 }).format(n);
+  const money = (n: number) => formatMoney(n, currency);
 
   const [from, setFrom] = useState(() => `${new Date().getFullYear()}-01-01`);
   const [to, setTo] = useState(() => new Date().toISOString().slice(0, 10));

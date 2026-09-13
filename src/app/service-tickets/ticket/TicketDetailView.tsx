@@ -44,7 +44,7 @@ import {
 import { useAuthStore } from "@/lib/auth-store";
 import { useRecordId } from "@/lib/use-record-id";
 import { Caption, Chip, DataRow } from "@/components/panel";
-import { cx, formatDate, formatDateTime } from "@/lib/utils";
+import { cx, formatDate, formatDateTime, formatMoney } from "@/lib/utils";
 import {
   Badge,
   Button,
@@ -69,7 +69,7 @@ export default function TicketDetailView() {
   const user = useAuthStore((s) => s.user);
   const currency = user?.store.currency ?? "PHP";
   const money = (n: number) =>
-    new Intl.NumberFormat("en-US", { style: "currency", currency, minimumFractionDigits: 2 }).format(n);
+    formatMoney(n, currency);
 
   const actor: Actor = { uuid: user?.uuid ?? null, name: user?.name ?? "Staff" };
 

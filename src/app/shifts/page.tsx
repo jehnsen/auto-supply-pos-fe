@@ -28,7 +28,7 @@ import {
 } from "@/lib/api/shifts";
 import { ApiError } from "@/lib/api/client";
 import { useAuthStore } from "@/lib/auth-store";
-import { cx, formatDateTime } from "@/lib/utils";
+import { cx, formatDateTime, formatMoney } from "@/lib/utils";
 import { Badge, Button, EmptyState, Field, Input, Modal, PageHeader, Segmented, Spinner, Table, Td, Textarea, Th } from "@/components/ui";
 import { StatTile } from "@/components/charts";
 
@@ -36,7 +36,7 @@ const SHIFT_NOTE_TAGS = ["Morning shift", "Evening shift", "Whole day"];
 
 function useMoney() {
   const currency = useAuthStore((s) => s.user?.store.currency) ?? "PHP";
-  return (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency, minimumFractionDigits: 2 }).format(n);
+  return (n: number) => formatMoney(n, currency);
 }
 
 export default function ShiftsPage() {

@@ -28,7 +28,7 @@ import { getSaleReceipt, listSales, refundSale, voidSale, type Sale } from "@/li
 import { ApiError } from "@/lib/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import { hasPermission, PERMISSIONS } from "@/lib/permissions";
-import { cx, dayKey, daysAgo, downloadCSV, formatDateTime, formatNumber, formatQty } from "@/lib/utils";
+import { cx, dayKey, daysAgo, downloadCSV, formatDateTime, formatNumber, formatQty, formatMoney } from "@/lib/utils";
 import { Badge, Button, EmptyState, Input, Modal, PageHeader, PromptDialog, Spinner, Table, Td, Th } from "@/components/ui";
 import { ColumnChart, MeterList, SERIES_2 } from "@/components/charts";
 import ApiReceipt from "@/components/ApiReceipt";
@@ -97,7 +97,7 @@ function Reports() {
   const [customTo, setCustomTo] = useState(dayKey(new Date()));
 
   const currency = useAuthStore((s) => s.user?.store.currency) ?? "PHP";
-  const money = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency, minimumFractionDigits: 2 }).format(n);
+  const money = (n: number) => formatMoney(n, currency);
   const canViewCredit = useAuthStore((s) => hasPermission(s.user?.role, s.permissions, PERMISSIONS.REPORTS_VIEW_CREDIT));
   const canExport = useAuthStore((s) => hasPermission(s.user?.role, s.permissions, PERMISSIONS.REPORTS_EXPORT));
   const canVoid = useAuthStore((s) => hasPermission(s.user?.role, s.permissions, PERMISSIONS.SALES_VOID));

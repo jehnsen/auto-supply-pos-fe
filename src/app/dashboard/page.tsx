@@ -27,13 +27,13 @@ import { useAuthStore } from "@/lib/auth-store";
 import { CounterHeader } from "@/components/CounterHeader";
 import { Caption, Lamp, Panel } from "@/components/panel";
 import { Button, EmptyState, Spinner } from "@/components/ui";
-import { cx } from "@/lib/utils";
+import { cx, formatMoney } from "@/lib/utils";
 
 export default function DaySheetPage() {
   const user = useAuthStore((s) => s.user);
   const currency = user?.store.currency ?? "PHP";
   const money = (n: number) =>
-    new Intl.NumberFormat("en-US", { style: "currency", currency, minimumFractionDigits: 2 }).format(n);
+    formatMoney(n, currency);
 
   const [tickets, setTickets] = useState<ServiceTicket[]>([]);
   const [shift, setShift] = useState<Shift | null>(null);

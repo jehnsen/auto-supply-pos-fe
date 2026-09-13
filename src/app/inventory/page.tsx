@@ -34,7 +34,7 @@ import {
 import { ApiError } from "@/lib/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import { hasPermission, PERMISSIONS } from "@/lib/permissions";
-import { cx, dayKey, daysAgo, downloadCSV, formatDateTime, formatNumber, formatQty, toNum } from "@/lib/utils";
+import { cx, dayKey, daysAgo, downloadCSV, formatDateTime, formatNumber, formatQty, toNum, formatMoney, formatMoneyCompact } from "@/lib/utils";
 import {
   Badge,
   Button,
@@ -66,14 +66,8 @@ export default function InventoryPage() {
       hasPermission(s.user?.role, s.permissions, PERMISSIONS.INVENTORY_RECEIVE) ||
       hasPermission(s.user?.role, s.permissions, PERMISSIONS.PRODUCTS_ADJUST_STOCK)
   );
-  const money = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency, minimumFractionDigits: 2 }).format(n);
-  const moneyCompact = (n: number) =>
-    new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency,
-      notation: Math.abs(n) >= 10000 ? "compact" : "standard",
-      maximumFractionDigits: Math.abs(n) >= 10000 ? 1 : 2,
-    }).format(n);
+  const money = (n: number) => formatMoney(n, currency);
+  const moneyCompact = (n: number) => formatMoneyCompact(n, currency);
 
   const [tab, setTab] = useState<Tab>("stock");
   const [query, setQuery] = useState("");

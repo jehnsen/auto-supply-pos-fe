@@ -19,7 +19,7 @@ import { hasPermission, PERMISSIONS } from "@/lib/permissions";
 import { AdjustCreditLimitModal } from "@/components/AdjustCreditLimitModal";
 import { CustomerVehicles } from "@/components/CustomerVehicles";
 import { RecordPaymentModal } from "@/components/RecordPaymentModal";
-import { cx, formatDate } from "@/lib/utils";
+import { cx, formatDate, formatMoney } from "@/lib/utils";
 import { Badge, Button, EmptyState, Field, Input, Modal, PageHeader, Select, Spinner, Table, Td, Th } from "@/components/ui";
 
 const typeLabels: Record<CustomerType, string> = {
@@ -51,7 +51,7 @@ export default function CustomerDetailView() {
   const uuid = useRecordId();
   const router = useRouter();
   const currency = useAuthStore((s) => s.user?.store.currency) ?? "PHP";
-  const money = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency, minimumFractionDigits: 2 }).format(n);
+  const money = (n: number) => formatMoney(n, currency);
   const canEdit = useAuthStore((s) => hasPermission(s.user?.role, s.permissions, PERMISSIONS.CUSTOMERS_EDIT));
   const canManageCredit = useAuthStore((s) => hasPermission(s.user?.role, s.permissions, PERMISSIONS.CUSTOMERS_MANAGE_CREDIT));
 

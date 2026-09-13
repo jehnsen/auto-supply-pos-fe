@@ -17,7 +17,7 @@ import { listSuppliers, type Supplier } from "@/lib/api/suppliers";
 import { listProducts, type ProductListItem } from "@/lib/api/products";
 import { ApiError } from "@/lib/api/client";
 import { useAuthStore } from "@/lib/auth-store";
-import { cx, formatDate, formatQty, toNum } from "@/lib/utils";
+import { cx, formatDate, formatQty, toNum, formatMoney, DEFAULT_CURRENCY } from "@/lib/utils";
 import {
   Badge,
   Button,
@@ -56,7 +56,7 @@ const statusTone: Record<PurchaseOrderStatus, "neutral" | "brand" | "good" | "cr
 
 export default function PurchaseOrdersPage() {
   const currency = useAuthStore((s) => s.user?.store.currency) ?? "PHP";
-  const money = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency, minimumFractionDigits: 2 }).format(n);
+  const money = (n: number) => formatMoney(n, currency);
 
   const [statusFilter, setStatusFilter] = useState<PurchaseOrderStatus | "all">("all");
   const [page, setPage] = useState(1);
@@ -574,6 +574,9 @@ function ReceivePOModal({
 }
 
 function CreatePOModal({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
+  // Read from the store rather than threading a prop down: the modal is rendered from one
+  // place and the currency is a store-wide setting, not something the caller varies.
+  const currency = useAuthStore((s) => s.user?.store.currency) ?? DEFAULT_CURRENCY;
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [products, setProducts] = useState<ProductListItem[]>([]);
   const [supplierId, setSupplierId] = useState("");
@@ -717,7 +720,7 @@ function CreatePOModal({ onClose, onCreated }: { onClose: () => void; onCreated:
       <div className="mt-3 flex items-center justify-between rounded-lg bg-black/[0.04] px-3 py-2">
         <span className="text-xs text-ink-secondary">Order total</span>
         <span className="text-sm font-semibold">
-          {new Intl.NumberFormat("en-US", { style: "currency", currency: "PHP", minimumFractionDigits: 2 }).format(total)}
+          {formatMoney(total, currency)}
         </span>
       </div>
     </Modal>
