@@ -41,7 +41,7 @@ import { ApiError } from "@/lib/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import { cx, round2, formatMoney } from "@/lib/utils";
 import { Badge, Button, EmptyState, Field, Input, Modal, Spinner } from "@/components/ui";
-import { CategoryGlyph, CategoryIcon, getCategoryBorder, getCategoryChip } from "@/lib/category-icons";
+import { CategoryGlyph, CategoryIcon, getCategoryBorder, getCategoryChip, getCategoryWash } from "@/lib/category-icons";
 import { CustomerPicker } from "@/components/CustomerPicker";
 import ApiReceipt from "@/components/ApiReceipt";
 
@@ -500,7 +500,8 @@ export default function PosPage() {
                       ? "border-l-status-critical opacity-45"
                       : cx(
                           getCategoryBorder(p.categorySlug, p.name),
-                          p.lowStock && "bg-amber-50/40",
+                          getCategoryWash(p.categorySlug, p.name),
+                          p.lowStock && "ring-1 ring-inset ring-status-warning/40",
                           "hover:-translate-y-0.5 hover:shadow-md active:translate-y-0"
                         )
                   )}
