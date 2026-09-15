@@ -78,8 +78,8 @@
    * Engineering grid. Two scales: a fine grid for the working ground and a coarser major
    * line every 5th cell, the way a real drafting sheet is ruled.
    */
-  --grid-line: rgba(13, 17, 23, 0.04);
-  --grid-line-major: rgba(13, 17, 23, 0.06);
+  --grid-line: rgba(13, 17, 23, 0.02);
+  --grid-line-major: rgba(13, 17, 23, 0.035);
   --grid-size: 22px;
 
   /* Sidebar: the instrument rail — a darker plate than the page, like a bezel. */
@@ -165,8 +165,8 @@
   --seam: rgba(255, 255, 255, 0.08);
   --tick: rgba(255, 255, 255, 0.32);
 
-  --grid-line: rgba(255, 255, 255, 0.035);
-  --grid-line-major: rgba(255, 255, 255, 0.055);
+  --grid-line: rgba(255, 255, 255, 0.02);
+  --grid-line-major: rgba(255, 255, 255, 0.035);
 
   --sidebar-bg: #12161d;
   --sidebar-border: rgba(255, 255, 255, 0.08);

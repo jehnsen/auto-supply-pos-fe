@@ -395,7 +395,7 @@ export default function PosPage() {
   }, [anyModalOpen, cart.length, noOpenShift]);
 
   return (
-    <div ref={posRootRef} className="flex h-screen bg-card">
+    <div ref={posRootRef} className="flex h-full bg-card">
       {/* Product side */}
       <div className="flex min-w-0 flex-1 flex-col p-4">
         {noOpenShift && (

@@ -170,7 +170,7 @@ export default function Shell({ children }: { children: ReactNode }) {
   return (
     // `app-square` zeroes radii app-wide — the rail and top bar included, so the whole
     // chrome shares one edge treatment rather than only the content area.
-    <div className="app-square flex min-h-screen">
+    <div className="app-square flex h-screen">
       <aside
         className={cx(
           "mech fixed inset-y-0 left-0 z-40 flex flex-col border-r transition-[width] duration-200",
@@ -294,10 +294,15 @@ export default function Shell({ children }: { children: ReactNode }) {
         </div>
       </aside>
 
-      <div className={cx("flex min-w-0 flex-1 flex-col transition-[margin] duration-200", collapsed ? "ml-16" : "ml-16 lg:ml-60")}>
+      <div
+        className={cx(
+          "flex h-screen min-w-0 flex-1 flex-col overflow-hidden transition-[margin] duration-200",
+          collapsed ? "ml-16" : "ml-16 lg:ml-60"
+        )}
+      >
         {/* Top bar: global lookup on the left, shop context and account on the right. */}
         <header
-          className="brushed sticky top-0 z-30 flex h-14 shrink-0 items-center gap-3 border-b px-4"
+          className="brushed flex h-14 shrink-0 items-center gap-3 border-b px-4"
           style={{ background: "var(--sidebar-bg)", borderColor: "var(--sidebar-border)" }}
         >
           <div className="relative w-full max-w-md">
@@ -352,7 +357,7 @@ export default function Shell({ children }: { children: ReactNode }) {
           </div>
         </header>
 
-        <main className="app-grid min-w-0 flex-1">{children}</main>
+        <main className="app-grid min-w-0 flex-1 overflow-y-auto">{children}</main>
       </div>
     </div>
   );
