@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Archive, Columns3, Plus, Rows3, Search, X } from "lucide-react";
@@ -39,6 +39,8 @@ export default function RepairBoardPage() {
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
   const [moving, setMoving] = useState(false);
+  const [draggingUuid, setDraggingUuid] = useState<string | null>(null);
+  const [dragOverStage, setDragOverStage] = useState<BoardStage | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedQuery(query.trim()), 250);
@@ -101,6 +103,20 @@ export default function RepairBoardPage() {
       await load();
     } finally {
       setMoving(false);
+    }
+  }
+
+  async function moveTicket(uuid: string, stage: BoardStage) {
+    const ticket = tickets.find((t) => t.uuid === uuid);
+    if (!ticket || stageOf(ticket.status) === stage) return;
+    const status = primaryStatusForStage(stage);
+    // Optimistic: the board should feel instant, then reconcile with the server's response.
+    setTickets((prev) => prev.map((t) => (t.uuid === uuid ? { ...t, status } : t)));
+    try {
+      const updated = await advanceStatus(uuid, status, actor, "Moved from the board");
+      setTickets((prev) => prev.map((t) => (t.uuid === uuid ? updated : t)));
+    } catch {
+      await load();
     }
   }
 
@@ -193,6 +209,7 @@ export default function RepairBoardPage() {
         <div className="scrollbar-hidden -mx-1 flex gap-3 overflow-x-auto px-1 pb-4">
           {BOARD_STAGES.map((stage) => {
             const cards = visible.filter((t) => stageOf(t.status) === stage.id);
+            const isDragOver = dragOverStage === stage.id;
             return (
               <section key={stage.id} className="flex w-72 shrink-0 flex-col">
                 <div
@@ -205,17 +222,41 @@ export default function RepairBoardPage() {
                   </div>
                   <p className="mt-0.5 text-[11px] text-ink-muted">{stage.blurb}</p>
                 </div>
-                <div className="flex flex-1 flex-col gap-2 rounded-b-lg border-x border-b border-black/[0.07] bg-black/[0.015] p-2">
+                <div
+                  onDragOver={(e) => {
+                    if (!draggingUuid) return;
+                    e.preventDefault();
+                    setDragOverStage(stage.id);
+                  }}
+                  onDragLeave={() => setDragOverStage((s) => (s === stage.id ? null : s))}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    const uuid = e.dataTransfer.getData("text/plain") || draggingUuid;
+                    setDragOverStage(null);
+                    setDraggingUuid(null);
+                    if (uuid) moveTicket(uuid, stage.id);
+                  }}
+                  className={cx(
+                    "flex flex-1 flex-col gap-2 rounded-b-lg border-x border-b p-2 transition-colors",
+                    isDragOver ? "border-brand/40 bg-brand-soft" : "border-black/[0.07] bg-black/[0.015]"
+                  )}
+                >
                   {cards.length === 0 ? (
-                    <p className="py-6 text-center text-xs text-ink-muted">Empty</p>
+                    <p className="py-6 text-center text-xs text-ink-muted">{isDragOver ? "Drop here" : "Empty"}</p>
                   ) : (
                     cards.map((t) => (
                       <JobCard
                         key={t.uuid}
                         ticket={t}
                         selected={selected.includes(t.uuid)}
+                        dragging={draggingUuid === t.uuid}
                         onSelect={() => toggleSelect(t.uuid)}
                         onOpen={() => router.push(`/service-tickets/ticket?id=${t.uuid}`)}
+                        onDragStart={() => setDraggingUuid(t.uuid)}
+                        onDragEnd={() => {
+                          setDraggingUuid(null);
+                          setDragOverStage(null);
+                        }}
                       />
                     ))
                   )}
@@ -285,25 +326,47 @@ export default function RepairBoardPage() {
 function JobCard({
   ticket,
   selected,
+  dragging,
   onSelect,
   onOpen,
+  onDragStart,
+  onDragEnd,
 }: {
   ticket: ServiceTicket;
   selected: boolean;
+  dragging: boolean;
   onSelect: () => void;
   onOpen: () => void;
+  onDragStart: () => void;
+  onDragEnd: () => void;
 }) {
   const promise = promiseLabel(ticket.promised_at);
   const stalled = isStalled(ticket);
+  const didDragRef = useRef(false);
 
   return (
     <article
-      onClick={onOpen}
+      onClick={() => {
+        if (didDragRef.current) {
+          didDragRef.current = false;
+          return;
+        }
+        onOpen();
+      }}
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.setData("text/plain", ticket.uuid);
+        e.dataTransfer.effectAllowed = "move";
+        didDragRef.current = true;
+        onDragStart();
+      }}
+      onDragEnd={onDragEnd}
       className={cx(
-        "group cursor-pointer rounded-lg border border-black/[0.07] bg-card p-2.5 transition-all hover:shadow-md",
+        "group cursor-grab rounded-lg border border-black/[0.07] bg-card p-2.5 transition-all hover:shadow-md active:cursor-grabbing",
         // The red edge is the board's one urgent signal: this job is past its promise.
         promise?.late && "border-l-[3px] border-l-status-critical",
-        selected && "ring-2 ring-brand/40"
+        selected && "ring-2 ring-brand/40",
+        dragging && "opacity-40"
       )}
     >
       <div className="flex items-start justify-between gap-2">
